@@ -2,8 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { requireAuth } from "@/lib/auth-utils";
 
-const Home = () => {
+const Home =async () => {
+
+  await requireAuth();
   const { data } = authClient.useSession();
 
   return (
