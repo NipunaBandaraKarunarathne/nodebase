@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 import {
   Card,
@@ -85,6 +86,13 @@ export function LoginForm() {
                     disabled={isPending}
                   >
                     {" "}
+                    <Image
+                      src="/github.svg"
+                      alt="Github logo"
+                      width={20}
+                      height={20}
+                      className="mr-2"
+                    />
                     Continue with Github
                   </Button>
                   <Button
@@ -94,6 +102,13 @@ export function LoginForm() {
                     disabled={isPending}
                   >
                     {" "}
+                    <Image
+                      src="/google.svg"
+                      alt="Google logo"
+                      width={20}
+                      height={20}
+                      className="mr-2"
+                    />
                     Continue with Google
                   </Button>
                 </div>
