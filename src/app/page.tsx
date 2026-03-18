@@ -8,6 +8,7 @@ import { LogoutButton } from "./logout";
 import { use } from "react";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Home = () => {
 
@@ -19,6 +20,7 @@ const Home = () => {
     {
       onSuccess: () => {
         queryClient.invalidateQueries(trpc.getWorkflows.queryOptions());
+        toast.success("Workflow created successfully, job queued in Inngest!");
       }
     }
   ));
