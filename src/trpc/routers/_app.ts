@@ -1,9 +1,6 @@
-import { create } from "domain";
-import { baseProcedure, createTRPCRouter, protectedProcedure } from "../init";
-import prisma from "@/lib/db";
 import { inngest } from "@/inngest/client";
-import { google } from "@ai-sdk/google";
-import { generateText } from "ai";
+import prisma from "@/lib/db";
+import { createTRPCRouter, protectedProcedure } from "../init";
 
 export const appRouter = createTRPCRouter({
   testAI: protectedProcedure.mutation(async () => {
@@ -11,8 +8,9 @@ export const appRouter = createTRPCRouter({
     //   model: google("gemini-2.5-flash"),
     //   prompt: "Write a vegetarian lasagna recipe for 4 people.",
     // });
-    await inngest.send({ name:'execute/ai'})
-        return {
+
+    await inngest.send({ name: "execute/ai" });
+    return {
       success: true,
       message: "Workflow created successfully, job queued in Inngest!",
     };
