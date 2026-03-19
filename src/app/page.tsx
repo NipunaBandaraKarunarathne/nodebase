@@ -9,12 +9,17 @@ import { use } from "react";
 import { useTRPC } from "@/trpc/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { tr } from "date-fns/locale";
 
 const Home = () => {
+
 
   const trpc = useTRPC();
   const { data, error} = useQuery(trpc.getWorkflows.queryOptions());
   const queryClient = useQueryClient();
+
+
+  const textAI = useMutation(trpc.testAI.mutationOptions());
 
   const create = useMutation(trpc.createWorkflow.mutationOptions(
     {
@@ -32,6 +37,8 @@ const Home = () => {
       Hello world
       <div className="min-h-screen min-w-screen flex items-center justify-center flex-col gap-y-6">
         {JSON.stringify(data,null,2)}
+
+        <Button disabled={textAI.isPending} onClick={() => textAI.mutate()}>Test AI</Button>
 
         <Button disabled={create.isPending} onClick={() => create.mutate()}>Create Workflow</Button>
    
