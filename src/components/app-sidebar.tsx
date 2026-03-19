@@ -22,6 +22,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth-client";
 
 const menuItems = [
   {
@@ -75,6 +76,7 @@ export const AppSidebar = () => {
           return (
             <SidebarGroup key={menu.title}>
               <SidebarGroupContent>
+                <SidebarMenu>
                 {menu.items.map((item) => {
                   return (
                     <SidebarMenuItem key={item.title}>
@@ -100,11 +102,55 @@ export const AppSidebar = () => {
                     </SidebarMenuItem>
                   );
                 })}
+                </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
           );
         })}
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={"Upgrade to Pro"}
+              className="gap-x-4 h-10 px-4"
+              onClick={() => {}}
+            >
+              <StarIcon className="w-4 h-4" />
+              <span className="text-sm">Upgrade to Pro</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={"Billing Portal"}
+              className="gap-x-4 h-10 px-4"
+              onClick={() => {}}
+            >
+              <CreditCardIcon className="w-4 h-4" />
+              <span className="text-sm">Billing Portal</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={"Sign Out"}
+              className="gap-x-4 h-10 px-4"
+              onClick={() =>authClient.signOut({
+                fetchOptions:{
+                    onSuccess:()=>{
+                        router.push("/login")
+                    }
+                }
+              })}
+            >
+              <LogOutIcon className="w-4 h-4" />
+              <span className="text-sm">Sign Out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 };
