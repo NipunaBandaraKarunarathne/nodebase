@@ -19,7 +19,10 @@ const Home = () => {
   const queryClient = useQueryClient();
 
 
-  const textAI = useMutation(trpc.testAI.mutationOptions());
+  const textAI = useMutation(trpc.testAI.mutationOptions({
+    onSuccess: () => {toast.success("AI executed successfully, check console for response!");
+    }
+  }));
 
   const create = useMutation(trpc.createWorkflow.mutationOptions(
     {
