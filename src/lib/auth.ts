@@ -28,7 +28,7 @@ export const auth = betterAuth({
           products: [
             {
               productId: "932be397-fc0d-45c5-8e70-301edc527409",
-              slug: "Pro",
+              slug: "pro",
             },
           ],
           successUrl: process.env.NEXT_PUBLIC_APP_URL,
