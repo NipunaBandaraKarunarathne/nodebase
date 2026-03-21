@@ -1,25 +1,37 @@
 "use client";
 import { json } from "zod";
-import { useSuspenseWorkflows } from "../hooks/use-workflows";
+import { useCreateWorkFlow, useSuspenseWorkflows } from "../hooks/use-workflows";
 import { EntityContainer, EntityHeader } from "@/components/entity-components";
 import React from "react";
 
 export const WorkflowsList = () => {
   const workflows = useSuspenseWorkflows();
 
-  return <p>{JSON.stringify(workflows.data, null, 2)}</p>;
+  return (
+    <div className="flex flex-1 justify-center items-center ">
+      <p>{JSON.stringify(workflows.data, null, 2)}</p>
+    </div>
+  );
 };
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
+    const createWorkflow = useCreateWorkFlow();
+    const handleCreate =()=>{
+        createWorkflow.mutate(undefined, {
+            onError:(error)=>{
+                console.error(error)
+            }
+        })
+    }
   return (
     <>
       <EntityHeader
         title="workflows"
         description="Create and Manage your Workflows"
-        onNew={() => {}}
+        onNew={handleCreate}
         newButtonLable="New workflow"
         disabled={disabled}
-        isCreating={false}
+        isCreating={createWorkflow.isPending}
       />
     </>
   );

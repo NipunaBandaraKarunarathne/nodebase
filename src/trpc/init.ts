@@ -51,12 +51,12 @@ export const premiumProcedure= protectedProcedure.use(
       externalId:ctx.userId
 
     });
-    if(!customer.activeSubscriptions|| customer.activeSubscriptions.length===0){
-      throw new TRPCError({
-        code:"FORBIDDEN",
-        message:"Active Subscription Required."
-      })
-    }
+    // if(!customer.activeSubscriptions|| customer.activeSubscriptions.length===0){
+    //   throw new TRPCError({
+    //     code:"FORBIDDEN",
+    //     message:"Active Subscription Required."
+    //   })
+    // }
     return next({ctx:{...ctx,customer}})
   },
 )
