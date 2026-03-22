@@ -2,6 +2,7 @@
 import { json } from "zod";
 import {
   useCreateWorkFlow,
+  useRemoveWorkFlow,
   useSuspenseWorkflows,
 } from "../hooks/use-workflows";
 import {
@@ -9,16 +10,27 @@ import {
   EntityHeader,
   EntityPagination,
   EntitySearch,
+  LoadingView,
+  ErrorView,
+  EmptyView,
+  EntityList,
+  EntityItem,
 } from "@/components/entity-components";
 import React from "react";
 import { useUpgradeModel } from "@/hooks/use-upgrade-model";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
+import { Workflow } from "@prisma/client";
+import { WorkflowIcon } from "lucide-react";
+import{formatDistanceToNow} from "date-fns";
 
 export const WorkflowsSearch = () => {
-  const[params, setParams]=useWorkflowsParams();
-  const {searchValue,onSearchChange}= useEntitySearch({params,setParams});
+  const [params, setParams] = useWorkflowsParams();
+  const { searchValue, onSearchChange } = useEntitySearch({
+    params,
+    setParams,
+  });
   return (
     <EntitySearch
       value={searchValue}
@@ -29,14 +41,23 @@ export const WorkflowsSearch = () => {
 };
 
 export const WorkflowsList = () => {
+  // throw new Error("test")
   const workflows = useSuspenseWorkflows();
 
+  if(workflows.data.items.length===0){
+    return(
+      <WorkflowsEmpty/>
+    )
+  }
+
   return (
-    <div className="flex flex-1 justify-center items-center ">
-      <p>{JSON.stringify(workflows.data, null, 2)}</p>
-    </div>
-  );
-};
+     <EntityList
+      items={workflows.data.items}
+      getKey={(workflow) => workflow.id}
+      renderItem={(workflow) =><WorkflowItem data={workflow}/>}
+      emptyView={<WorkflowsEmpty />} />
+  )
+}
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   const createWorkflow = useCreateWorkFlow();
@@ -67,19 +88,19 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   );
 };
 
-export const WorkFlowPagination=()=>{
+export const WorkFlowPagination = () => {
   const workflows = useSuspenseWorkflows();
-  const[params, setParams]= useWorkflowsParams();
+  const [params, setParams] = useWorkflowsParams();
 
-  return(
-        <EntityPagination
+  return (
+    <EntityPagination
       disabled={workflows.isFetching}
       totalPages={workflows.data.totalPages}
       page={workflows.data.page}
       onPageChange={(page) => setParams({ ...params, page })}
     />
-  )
-}
+  );
+};
 
 export const WorkFlowContainer = ({
   children,
@@ -89,10 +110,79 @@ export const WorkFlowContainer = ({
   return (
     <EntityContainer
       header={<WorkflowsHeader />}
-      search={<WorkflowsSearch/>}
-      pagination={<WorkFlowPagination/>}
+      search={<WorkflowsSearch />}
+      pagination={<WorkFlowPagination />}
     >
       {children}
     </EntityContainer>
   );
 };
+
+export const WorkflowsLoading = () => {
+  return <LoadingView message="Loading workflows..." />;
+};
+
+export const WorkflowsError = () => {
+  return <ErrorView message="Error..." />;
+};
+
+export const WorkflowsEmpty = () => {
+  const router = useRouter();
+  const createWorkflow = useCreateWorkFlow();
+  const { handleError, modal } = useUpgradeModel();
+
+  const handleCreate = () => {
+    createWorkflow.mutate(undefined, {
+      onError: (error) => {
+        handleError(error);
+      },
+      onSuccess: (data) => {
+        router.push(`/workflows/${data.id}`);
+      },
+    });
+  };
+
+  return (
+    <>
+      {modal}
+      <EmptyView
+        onNew={handleCreate}
+        message="You haven't created any workflows yet. Get started by creating your first workflow"
+      />
+    </>
+  );
+};
+
+export const WorkflowItem = ({
+  data,
+}: { 
+  data: Workflow
+}) => {
+  const removeWorkflow = useRemoveWorkFlow();
+
+  const handleRemove = () => {
+    removeWorkflow.mutate({ id: data.id });
+  }
+
+  return (
+    <EntityItem
+      href={`/workflows/${data.id}`}
+      title={data.name}
+      subtitle={
+        <>
+        Updated
+          Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
+          &bull; Created{" "}
+          {formatDistanceToNow(data.createdAt, { addSuffix: true })} 
+        </>
+      }
+      image={
+        <div className="size-8 flex items-center justify-center">
+          <WorkflowIcon className="size-5 text-muted-foreground" />
+        </div>
+      }
+     onRemove={handleRemove}
+      isRemoving={removeWorkflow.isPending}
+    />
+  )
+}
