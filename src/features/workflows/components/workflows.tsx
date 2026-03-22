@@ -9,12 +9,16 @@ import {
   EntityHeader,
   EntityPagination,
   EntitySearch,
+  LoadingView,
+  ErrorView
 } from "@/components/entity-components";
 import React from "react";
 import { useUpgradeModel } from "@/hooks/use-upgrade-model";
 import { useRouter } from "next/navigation";
 import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
+import { Import } from "lucide-react";
+
 
 export const WorkflowsSearch = () => {
   const[params, setParams]=useWorkflowsParams();
@@ -29,6 +33,7 @@ export const WorkflowsSearch = () => {
 };
 
 export const WorkflowsList = () => {
+  // throw new Error("test")
   const workflows = useSuspenseWorkflows();
 
   return (
@@ -95,4 +100,12 @@ export const WorkFlowContainer = ({
       {children}
     </EntityContainer>
   );
+};
+
+export const WorkflowsLoading = () => {
+  return <LoadingView message="Loading workflows..." />;
+};
+
+export const WorkflowsError = () => {
+  return <ErrorView message="Error..." />;
 };
