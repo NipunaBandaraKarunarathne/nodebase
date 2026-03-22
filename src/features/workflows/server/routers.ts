@@ -68,6 +68,11 @@ export const workflowsRouter = createTRPCRouter({
       ),
         prisma.workflow.count({
           where:{userId:ctx.userId,
+            name:{
+              contains:search,
+              mode:"insensitive"
+
+            }
 
           },
         }),
