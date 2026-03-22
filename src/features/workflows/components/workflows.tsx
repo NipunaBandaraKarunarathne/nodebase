@@ -2,6 +2,7 @@
 import { json } from "zod";
 import {
   useCreateWorkFlow,
+  useRemoveWorkFlow,
   useSuspenseWorkflows,
 } from "../hooks/use-workflows";
 import {
@@ -22,6 +23,7 @@ import { useWorkflowsParams } from "../hooks/use-workflows-params";
 import { useEntitySearch } from "../hooks/use-entity-search";
 import { Workflow } from "@prisma/client";
 import { WorkflowIcon } from "lucide-react";
+import{formatDistanceToNow} from "date-fns";
 
 export const WorkflowsSearch = () => {
   const [params, setParams] = useWorkflowsParams();
@@ -156,11 +158,11 @@ export const WorkflowItem = ({
 }: { 
   data: Workflow
 }) => {
- // const removeWorkflow = useRemoveWorkflow();
+  const removeWorkflow = useRemoveWorkFlow();
 
-  // const handleRemove = () => {
-  //   removeWorkflow.mutate({ id: data.id });
-  // }
+  const handleRemove = () => {
+    removeWorkflow.mutate({ id: data.id });
+  }
 
   return (
     <EntityItem
@@ -169,9 +171,9 @@ export const WorkflowItem = ({
       subtitle={
         <>
         Updated
-          {/* Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
+          Updated {formatDistanceToNow(data.updatedAt, { addSuffix: true })}{" "}
           &bull; Created{" "}
-          {formatDistanceToNow(data.createdAt, { addSuffix: true })} */}
+          {formatDistanceToNow(data.createdAt, { addSuffix: true })} 
         </>
       }
       image={
@@ -179,8 +181,8 @@ export const WorkflowItem = ({
           <WorkflowIcon className="size-5 text-muted-foreground" />
         </div>
       }
-    //  onRemove={handleRemove}
-    //  isRemoving={removeWorkflow.isPending}
+     onRemove={handleRemove}
+      isRemoving={removeWorkflow.isPending}
     />
   )
 }
