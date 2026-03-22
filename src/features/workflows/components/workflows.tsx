@@ -7,6 +7,7 @@ import {
 import {
   EntityContainer,
   EntityHeader,
+  EntityPagination,
   EntitySearch,
 } from "@/components/entity-components";
 import React from "react";
@@ -66,6 +67,20 @@ export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   );
 };
 
+export const WorkFlowPagination=()=>{
+  const workflows = useSuspenseWorkflows();
+  const[params, setParams]= useWorkflowsParams();
+
+  return(
+        <EntityPagination
+      disabled={workflows.isFetching}
+      totalPages={workflows.data.totalPages}
+      page={workflows.data.page}
+      onPageChange={(page) => setParams({ ...params, page })}
+    />
+  )
+}
+
 export const WorkFlowContainer = ({
   children,
 }: {
@@ -75,7 +90,7 @@ export const WorkFlowContainer = ({
     <EntityContainer
       header={<WorkflowsHeader />}
       search={<WorkflowsSearch/>}
-      pagination={<></>}
+      pagination={<WorkFlowPagination/>}
     >
       {children}
     </EntityContainer>
