@@ -90,6 +90,8 @@ model Workflow {
 
 enum NodeType {
   INITIAL
+  MANUAL_TRIGGER
+  HTTP_REQUEST
 }
 
 model Node {
@@ -110,17 +112,17 @@ model Node {
 }
 
 model Connection {
-  id String @id @default(cuid())
+  id         String   @id @default(cuid())
   workflowId String
-  workflow Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  workflow   Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
 
   fromNodeId String
-  fromNode Node @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
-  toNodeId String
-  toNode Node @relation("ToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
+  fromNode   Node   @relation("FromNode", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNodeId   String
+  toNode     Node   @relation("ToNode", fields: [toNodeId], references: [id], onDelete: Cascade)
 
   fromOutput String @default("main")
-  toInput String @default("main")
+  toInput    String @default("main")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
