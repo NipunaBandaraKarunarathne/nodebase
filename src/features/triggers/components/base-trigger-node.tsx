@@ -1,6 +1,6 @@
 "use client";
 
-import { type NodeProps, Position } from "@xyflow/react";
+import { type NodeProps, Position, useReactFlow } from "@xyflow/react";
 import type { LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { memo, type ReactNode } from "react";
@@ -16,7 +16,7 @@ interface BaseTriggernNodeProps extends NodeProps {
   // status?: NodeStatus;
   onSettings?: () => void;
   onDoubleClick?: () => void;
-};
+}
 
 export const BaseTriggernNode = memo(
   ({
@@ -28,8 +28,21 @@ export const BaseTriggernNode = memo(
     onSettings,
     onDoubleClick,
   }: BaseTriggernNodeProps) => {
-    // TODO: add delete method
-    const handleDelete = () => {};
+    const { setNodes, setEdges } = useReactFlow();
+    
+    const handleDelete = () => {
+      setNodes((currentNodes) => {
+        const updatedNodes = currentNodes.filter((node) => node.id !== id);
+        return updatedNodes;
+      });
+
+      setEdges((currentEdges) => {
+        const updatedEdges = currentEdges.filter(
+          (edge) => edge.source !== id && edge.target !== id,
+        );
+        return updatedEdges;
+      });
+    };
 
     return (
       <WorkflowNode
@@ -47,20 +60,12 @@ export const BaseTriggernNode = memo(
               <Icon className="size-4 text-muted-foreground" />
             )}
             {children}
-            <BaseHandle
-              id="target-1"
-              type="target"
-              position={Position.Left}
-            />
-            <BaseHandle
-              id="source-1"
-              type="source"
-              position={Position.Right}
-            />
+            <BaseHandle id="target-1" type="target" position={Position.Left} />
+            <BaseHandle id="source-1" type="source" position={Position.Right} />
           </BaseNodeContent>
         </BaseNode>
       </WorkflowNode>
-    )
+    );
   },
 );
 
