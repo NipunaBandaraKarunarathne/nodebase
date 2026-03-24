@@ -16,7 +16,7 @@ interface BaseExecutionNodeProps extends NodeProps {
   // status?: NodeStatus;
   onSettings?: () => void;
   onDoubleClick?: () => void;
-};
+}
 
 export const BaseExecutionNode = memo(
   ({
@@ -28,9 +28,8 @@ export const BaseExecutionNode = memo(
     onSettings,
     onDoubleClick,
   }: BaseExecutionNodeProps) => {
-
-     const { setNodes, setEdges } = useReactFlow();
-       const handleDelete = () => {
+    const { setNodes, setEdges } = useReactFlow();
+    const handleDelete = () => {
       setNodes((currentNodes) => {
         const updatedNodes = currentNodes.filter((node) => node.id !== id);
         return updatedNodes;
@@ -38,7 +37,7 @@ export const BaseExecutionNode = memo(
 
       setEdges((currentEdges) => {
         const updatedEdges = currentEdges.filter(
-          (edge) => edge.source !== id && edge.target !== id
+          (edge) => edge.source !== id && edge.target !== id,
         );
         return updatedEdges;
       });
@@ -60,20 +59,12 @@ export const BaseExecutionNode = memo(
               <Icon className="size-4 text-muted-foreground" />
             )}
             {children}
-            <BaseHandle
-              id="target-1"
-              type="target"
-              position={Position.Left}
-            />
-            <BaseHandle
-              id="source-1"
-              type="source"
-              position={Position.Right}
-            />
+            <BaseHandle id="target-1" type="target" position={Position.Left} />
+            <BaseHandle id="source-1" type="source" position={Position.Right} />
           </BaseNodeContent>
         </BaseNode>
       </WorkflowNode>
-    )
+    );
   },
 );
 
