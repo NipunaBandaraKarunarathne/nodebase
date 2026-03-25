@@ -36,6 +36,7 @@
     "embla-carousel-react": "^8.6.0",
     "inngest": "^4.0.1",
     "input-otp": "^1.4.2",
+    "jotai": "^2.19.0",
     "lucide-react": "^0.577.0",
     "mprocs": "^0.8.3",
     "next": "15.5.4",
