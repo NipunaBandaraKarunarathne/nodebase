@@ -1,28 +1,45 @@
 import { NonRetriableError } from "inngest";
 import { inngest } from "./client";
 import prisma from "@/lib/db";
+import { topologicalSort } from "./utils";
+import { getExecutor } from "@/features/executions/lib/executor-registry";
+import { NodeType } from "@prisma/client";
 
 export const executeWorkflow = inngest.createFunction(
   {
     id: "execute.workflow",
-     triggers: { event: "workflows/execute.workflow" },
+    triggers: { event: "workflows/execute.workflow" },
   },
-  
+
   async ({ event, step }) => {
-     const workflowId = event.data.workflowId;
+    const workflowId = event.data.workflowId;
     // console.log("workflow id",workflowId)
-    if(!workflowId){
+    if (!workflowId) {
       throw new NonRetriableError("Workflow id is missing!");
     }
 
-    const node= await step.run("Prepare workflow",async()=>{
+    const sortedNodes = await step.run("Prepare workflow", async () => {
       const workflow = await prisma.workflow.findUniqueOrThrow({
-        where:{id:workflowId},
-        include:{nodes:true,connections:true}
+        where: { id: workflowId },
+        include: { nodes: true, connections: true },
       });
 
-      return workflow.nodes;
-    })
-    return {node};
-  }
+      return topologicalSort(workflow.nodes, workflow.connections);
+    });
+
+ let context = event.data.initialData || {};
+
+     for (const node of sortedNodes) {
+      const executor = getExecutor(node.type as NodeType);
+      context = await executor({
+        data: node.data as Record<string, unknown>,
+        nodeId: node.id,
+        context,
+        step,
+      });
+    }
+
+
+    return { sortedNodes };
+  },
 );
