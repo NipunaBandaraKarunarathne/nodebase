@@ -33,12 +33,17 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 const formSchema = z.object({
+  variableName: z
+    .string()
+    .min(1, { message: "Variable Name is required" })
+    .regex(/^[A-Za-z_$][A-Za-z0-9_$]*$/, {
+      message:
+        "Variable name must start with a letter or underscore and container only letters, numbers, and underscores",
+    }),
   endpoint: z.url({ message: "Please enter a valid URL" }),
   method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]),
-  body: z
-    .string()
-    .optional()
-    // .refine() TODO JSON5
+  body: z.string().optional(),
+  // .refine() TODO JSON5
 });
 
 export type HttpRequestFormValues = z.infer<typeof formSchema>;
@@ -48,21 +53,21 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
 
-  defaultValues?:Partial<HttpRequestFormValues>;
-};
+  defaultValues?: Partial<HttpRequestFormValues>;
+}
 
 export const HttpRequestDialog = ({
   open,
   onOpenChange,
   onSubmit,
- defaultValues,
+  defaultValues,
 }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      endpoint: defaultValues?.endpoint||" ",
-      method: defaultValues?.method||"GET",
-      body: defaultValues?.body||" ",
+      endpoint: defaultValues?.endpoint || " ",
+      method: defaultValues?.method || "GET",
+      body: defaultValues?.body || " ",
     },
   });
 
@@ -70,13 +75,15 @@ export const HttpRequestDialog = ({
   useEffect(() => {
     if (open) {
       form.reset({
-        endpoint: defaultValues?.endpoint||"",
-        method: defaultValues?.method||"GET",
-        body: defaultValues?.body||" ",
+        variableName: defaultValues?.variableName || "",
+        endpoint: defaultValues?.endpoint || "",
+        method: defaultValues?.method || "GET",
+        body: defaultValues?.body || " ",
       });
     }
   }, [open, defaultValues, form]);
 
+   const watchVariableName = form.watch("variableName") || "myApiCall";
   const watchMethod = form.watch("method");
   const showBodyField = ["POST", "PUT", "PATCH"].includes(watchMethod);
 
@@ -99,6 +106,26 @@ export const HttpRequestDialog = ({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-8 mt-4"
           >
+            <FormField
+              control={form.control}
+              name="variableName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Variable Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="My API call"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                     Use this name to reference the result in other nodes:{" "}
+                    {`{{${watchVariableName}.httpResponse.data}}`}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="method"
@@ -142,7 +169,8 @@ export const HttpRequestDialog = ({
                     />
                   </FormControl>
                   <FormDescription>
-                    Static URL or use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
+                    Static URL or use {"{{variables}}"} for simple values or{" "}
+                    {"{{json variable}}"} to stringify objects
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -153,23 +181,25 @@ export const HttpRequestDialog = ({
                 control={form.control}
                 name="body"
                 render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Request Body</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder={
-                        '{\n  "userId": "{{httpResponse.data.id}}",\n  "name": "{{httpResponse.data.name}}",\n  "items": "{{httpResponse.data.items}}"\n}'
-                      }
-                      className="min-h-[120px] font-mono text-sm"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    JSON with template variables. Use {"{{variables}}"} for simple values or {"{{json variable}}"} to stringify objects
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+                  <FormItem>
+                    <FormLabel>Request Body</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={
+                          '{\n  "userId": "{{httpResponse.data.id}}",\n  "name": "{{httpResponse.data.name}}",\n  "items": "{{httpResponse.data.items}}"\n}'
+                        }
+                        className="min-h-[120px] font-mono text-sm"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      JSON with template variables. Use {"{{variables}}"} for
+                      simple values or {"{{json variable}}"} to stringify
+                      objects
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
             )}
             <DialogFooter className="mt-4">
