@@ -13,7 +13,7 @@ export const executeWorkflow = inngest.createFunction(
 
   async ({ event, step }) => {
     const workflowId = event.data.workflowId;
-    // console.log("workflow id",workflowId)
+
     if (!workflowId) {
       throw new NonRetriableError("Workflow id is missing!");
     }
@@ -27,9 +27,9 @@ export const executeWorkflow = inngest.createFunction(
       return topologicalSort(workflow.nodes, workflow.connections);
     });
 
- let context = event.data.initialData || {};
+    let context = event.data.initialData || {};
 
-     for (const node of sortedNodes) {
+    for (const node of sortedNodes) {
       const executor = getExecutor(node.type as NodeType);
       context = await executor({
         data: node.data as Record<string, unknown>,
@@ -38,7 +38,6 @@ export const executeWorkflow = inngest.createFunction(
         step,
       });
     }
-
 
     return { sortedNodes };
   },
