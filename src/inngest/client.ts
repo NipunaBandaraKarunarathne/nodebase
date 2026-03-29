@@ -1,15 +1,7 @@
-
+import { realtimeMiddleware } from "@inngest/realtime/middleware";
 import { Inngest } from "inngest";
 
-export const inngest = new Inngest({
+export const inngest = new Inngest({ 
   id: "nodebase",
-  name: "NodeBase",
- 
-  schemas: {
-    "workflows/execute.workflow": {
-      data: {} as {
-        workflowId?: string;
-      },
-    },
-  },
+  middleware: [realtimeMiddleware()],
 });
