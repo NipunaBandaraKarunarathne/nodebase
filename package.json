@@ -7,7 +7,7 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "biome check",
-     "ngrok:dev": "ngrok http --url=${NGROK_URL} 3000",
+    "ngrok:dev": "ngrok http --url=${NGROK_URL} 3000",
     "format": "biome format --write",
     "inngest:dev": "inngest-cli dev",
     "dev:all": "mprocs"
@@ -35,6 +35,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "dotenv-cli": "^11.0.0",
     "embla-carousel-react": "^8.6.0",
     "handlebars": "^4.7.9",
     "inngest": "^3.52.7",
