@@ -35,25 +35,25 @@ export const EditorError = () => {
 };
 
 export const Editor = ({ workflowId }: { workflowId: string }) => {
-  const { data: workflow } = useSuspenseWorkflow(workflowId);
+  const { 
+    data: workflow
+  } = useSuspenseWorkflow(workflowId);
+
   const setEditor = useSetAtom(editorAtom);
 
   const [nodes, setNodes] = useState<Node[]>(workflow.nodes);
   const [edges, setEdges] = useState<Edge[]>(workflow.edges);
 
   const onNodesChange = useCallback(
-    (changes: NodeChange[]) =>
-      setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    (changes: NodeChange[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
     [],
   );
   const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) =>
-      setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    (changes: EdgeChange[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
     [],
   );
   const onConnect = useCallback(
-    (params: Connection) =>
-      setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
+    (params: Connection) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
     [],
   );
 
@@ -62,7 +62,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
   }, [nodes]);
 
   return (
-    <div className="size-full">
+    <div className='size-full'>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -71,16 +71,13 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         onConnect={onConnect}
         nodeTypes={nodeComponents}
         onInit={setEditor}
+        fitView
         snapGrid={[10, 10]}
         snapToGrid
         panOnScroll
         panOnDrag={false}
         selectionOnDrag
-        fitView
-
-        // proOptions={{hideAttribution:true}}
       >
-        {" "}
         <Background />
         <Controls />
         <MiniMap />
@@ -89,7 +86,7 @@ export const Editor = ({ workflowId }: { workflowId: string }) => {
         </Panel>
         {hasManualTrigger && (
           <Panel position="bottom-center">
-            <ExecuteWorkflowButton  workflowId={workflowId}/>
+            <ExecuteWorkflowButton workflowId={workflowId} />
           </Panel>
         )}
       </ReactFlow>

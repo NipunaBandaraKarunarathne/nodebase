@@ -20,7 +20,7 @@ interface BaseExecutionNodeProps extends NodeProps {
   status?: NodeStatus;
   onSettings?: () => void;
   onDoubleClick?: () => void;
-}
+};
 
 export const BaseExecutionNode = memo(
   ({
@@ -42,7 +42,7 @@ export const BaseExecutionNode = memo(
 
       setEdges((currentEdges) => {
         const updatedEdges = currentEdges.filter(
-          (edge) => edge.source !== id && edge.target !== id,
+          (edge) => edge.source !== id && edge.target !== id
         );
         return updatedEdges;
       });
@@ -55,24 +55,24 @@ export const BaseExecutionNode = memo(
         onDelete={handleDelete}
         onSettings={onSettings}
       >
-        <NodeStatusIndicator status={status} variant="border">
-          <BaseNode
-            data-status={status}
-            onDoubleClick={onDoubleClick}
-            className="rounded-l-2xl relative group"
-          >
+        <NodeStatusIndicator
+          status={status}
+          variant="border"
+          className="rounded-l-2xl"
+        >
+          <BaseNode status={status} onDoubleClick={onDoubleClick} className="rounded-l-2xl relative group">
             <BaseNodeContent>
               {typeof Icon === "string" ? (
-                <Image src={Icon} alt={name} width={16} height={16} />
+                <Image 
+                  src={Icon} 
+                  alt={name} 
+                  width={16} 
+                  height={16}
+                />
               ) : (
                 <Icon className="size-4 text-muted-foreground" />
               )}
               {children}
-              <BaseHandle
-                id="target-1"
-                type="target"
-                position={Position.Left}
-              />
               <BaseHandle
                 id="source-1"
                 type="source"
@@ -82,8 +82,8 @@ export const BaseExecutionNode = memo(
           </BaseNode>
         </NodeStatusIndicator>
       </WorkflowNode>
-    );
+    )
   },
 );
 
-BaseExecutionNode.displayName = "BaseExecutionNode";
+BaseExecutionNode.displayName = "BaseTriggerNode";
