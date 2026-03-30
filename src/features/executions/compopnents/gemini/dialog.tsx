@@ -179,7 +179,7 @@ export const GeminiDialog = ({
 
             <FormField
               control={form.control}
-              name="systemPrompt"
+              name="userPrompt"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>User Prompt</FormLabel>
