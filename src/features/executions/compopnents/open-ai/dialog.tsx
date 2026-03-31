@@ -26,7 +26,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { NodeType } from "@prisma/client";
+
 
 
 
@@ -44,17 +44,17 @@ const formSchema = z.object({
   // .refine() TODO JSON5
 });
 
-export type GeminiFormValues = z.infer<typeof formSchema>;
+export type OpenAiFormValues = z.infer<typeof formSchema>;
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: (values: z.infer<typeof formSchema>) => void;
 
-  defaultValues?: Partial<GeminiFormValues>;
+  defaultValues?: Partial<OpenAiFormValues>;
 }
 
-export const GeminiDialog = ({
+export const OpenAiDialog = ({
   open,
   onOpenChange,
   onSubmit,
@@ -95,9 +95,9 @@ export const GeminiDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Gemini Configuration</DialogTitle>
+          <DialogTitle>Open-AI Configuration</DialogTitle>
           <DialogDescription>
-            Configure settings for the Gemini node.
+            Configure settings for the Open-AI node.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -112,7 +112,7 @@ export const GeminiDialog = ({
                 <FormItem>
                   <FormLabel>Variable Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="myGemini" {...field} />
+                    <Input placeholder="OpenAI" {...field} />
                   </FormControl>
                   <FormDescription>
                     Use this name to reference the result in other nodes:{" "}

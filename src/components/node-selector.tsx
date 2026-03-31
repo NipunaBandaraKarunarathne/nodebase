@@ -60,6 +60,13 @@ const executionNodes: NodeTypeOption[] = [
     label: "Gemini",
     description: "Use Google gemini to generate text",
     icon: "/gemini.svg",
+  },
+
+    {
+    type: NodeType.OPENAI,
+    label: "Open-AI",
+    description: "Use Google chatgpt to generate text",
+    icon: "/openai.svg",
   }
 ];
 

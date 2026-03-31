@@ -1,9 +1,9 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { openai,createOpenAI } from '@ai-sdk/openai';
 import Handlebars from "handlebars";
 import { generateText } from "ai";
-import { geminiChannel } from "@/inngest/channels/gemini";
+import { openAiChannel } from "@/inngest/channels/open-ai";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -12,14 +12,14 @@ Handlebars.registerHelper("json", (context) => {
   return safeString;
 });
 
-type GeminiData = {
+type OpenAiData = {
   variableName?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
 };
 
-export const geminiExecutor: NodeExecutor<GeminiData> = async ({
+export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
   data,
   nodeId,
   context,
@@ -27,7 +27,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
   publish,
 }) => {
   const updateStatus = (status: "loading" | "success" | "error") =>
-    publish(geminiChannel().status({ nodeId, status }));
+    publish(openAiChannel().status({ nodeId, status }));
 
   await updateStatus("loading");
 
@@ -41,9 +41,9 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     throw new NonRetriableError("User prompt is missing");
   }
 
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  const credentialValue = process.env.OPEN_AI_API_KEY;
   if (!credentialValue) {
-    throw new NonRetriableError("Missing GOOGLE_GENERATIVE_AI_API_KEY");
+    throw new NonRetriableError("Missing OPEN_AI_API_KEY");
   }
 
   let systemPrompt = "You are a helpful assistant.";
@@ -59,15 +59,15 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     throw new NonRetriableError("Invalid Handlebars template");
   }
 
-  const google = createGoogleGenerativeAI({
+  const openai = createOpenAI({
     apiKey: credentialValue,
   });
 
-  const modelName = "gemini-3-flash-preview"; // Default model model: google("gemini-1.5-flash")
+  const modelName = "gpt-5"; 
 
   try {
-    const { steps } = await step.ai.wrap("gemini-generate-text", generateText, {
-      model: google(modelName),
+    const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
+      model: openai(modelName),
       system: systemPrompt,
       prompt: userPrompt,
     });
