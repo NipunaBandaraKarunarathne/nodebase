@@ -45,6 +45,8 @@ const triggerNodes: NodeTypeOption[] = [
     description: "Runs the flow when a Stripe event is captured",
     icon: "/stripe.svg",
   },
+
+  
 ];
 
 const executionNodes: NodeTypeOption[] = [
@@ -54,6 +56,26 @@ const executionNodes: NodeTypeOption[] = [
     description: "Makes an HTTP request",
     icon: GlobeIcon,
   },
+
+  {
+    type: NodeType.GEMINI,
+    label: "Gemini",
+    description: "Use Google gemini to generate text",
+    icon: "/gemini.svg",
+  },
+
+    {
+    type: NodeType.OPENAI,
+    label: "Open-AI",
+    description: "Use Google chatgpt to generate text",
+    icon: "/openai.svg",
+  },
+  {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic",
+    description: "Use Anthropic to generate text",
+    icon: "/anthropic.svg",
+  }
 ];
 
 interface NodeSelectorProps {
