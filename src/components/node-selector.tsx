@@ -45,6 +45,8 @@ const triggerNodes: NodeTypeOption[] = [
     description: "Runs the flow when a Stripe event is captured",
     icon: "/stripe.svg",
   },
+
+  
 ];
 
 const executionNodes: NodeTypeOption[] = [
@@ -67,6 +69,12 @@ const executionNodes: NodeTypeOption[] = [
     label: "Open-AI",
     description: "Use Google chatgpt to generate text",
     icon: "/openai.svg",
+  },
+  {
+    type: NodeType.ANTHROPIC,
+    label: "Anthropic",
+    description: "Use Anthropic to generate text",
+    icon: "/anthropic.svg",
   }
 ];
 

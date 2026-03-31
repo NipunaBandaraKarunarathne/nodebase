@@ -8,6 +8,7 @@ import { GoogleFormTrigger } from "@/features/triggers/components/google-form-tr
 import { StripeTriggerNode } from "@/features/triggers/components/stripe-trigger/node";
 import { GeminiNode } from "@/features/executions/compopnents/gemini/node";
 import { OpenAINode } from "@/features/executions/compopnents/open-ai/node";
+import { AnthropicNode } from "@/features/executions/compopnents/anthripic/node";
 
 export const nodeComponents = {
   [NodeType.INITIAL]: InitialNode,
@@ -16,7 +17,8 @@ export const nodeComponents = {
   [NodeType.GOOGLE_FORM_TRIGGER]: GoogleFormTrigger,
   [NodeType.STRIPE_TRIGGER]: StripeTriggerNode,
   [NodeType.GEMINI]: GeminiNode,
-  [NodeType.OPENAI]: OpenAINode, // Reusing GeminiNode for OpenAI nodes for now
+  [NodeType.OPENAI]: OpenAINode,
+  [NodeType.ANTHROPIC]: AnthropicNode,
 } as const satisfies NodeTypes;
 
 export type RegisteredNodeType = keyof typeof nodeComponents;
