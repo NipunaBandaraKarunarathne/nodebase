@@ -63,11 +63,11 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     apiKey: credentialValue,
   });
 
-  const modelName = "gpt-5"; 
+  const modelName = ""; 
 
   try {
     const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
-      model: openai(modelName),
+      model: openai('gpt-3.5-turbo'),
       system: systemPrompt,
       prompt: userPrompt,
     });
