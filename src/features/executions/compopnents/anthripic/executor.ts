@@ -42,9 +42,9 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("User prompt is missing");
   }
 
-  const credentialValue = process.env.OPEN_AI_API_KEY;
+  const credentialValue = process.env.ANTHROPIC_API_KEY;
   if (!credentialValue) {
-    throw new NonRetriableError("Missing OPEN_AI_API_KEY");
+    throw new NonRetriableError("Missing ANTHROPIC_API_KEY");
   }
 
   let systemPrompt = "You are a helpful assistant.";
@@ -60,11 +60,13 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("Invalid Handlebars template");
   }
 
-  const openai = createAnthropic({
+   
+
+  const anthropic = createAnthropic({
     apiKey: credentialValue,
   });
 
-  const modelName = ""; 
+  //const modelName = ""; 
 
   try {
     const { steps } = await step.ai.wrap("anthropic-generate-text", generateText, {
