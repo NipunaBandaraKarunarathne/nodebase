@@ -71,9 +71,6 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     throw new NonRetriableError("Invalid Handlebars template");
   }
 
-  // const google = createGoogleGenerativeAI({
-  //   apiKey: credentialValue,
-  // });
 
   const modelName = "gemini-3-flash-preview"; // Default model model: google("gemini-1.5-flash")
 
