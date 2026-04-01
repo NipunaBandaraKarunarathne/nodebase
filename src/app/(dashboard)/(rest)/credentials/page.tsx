@@ -5,7 +5,12 @@ import { HydrateClient } from "@/trpc/server";
 import { ErrorBoundary } from "react-error-boundary";
 import { SearchParams } from "nuqs";
 import { Suspense } from "react";
-import { CredentialsList } from "@/features/credentials/components/credentials";
+import {
+  CredentialsList,
+  CredentialsContainer,
+  CredentialsError,
+  CredentialsLoading
+} from "@/features/credentials/components/credentials";
 
 type Props = {
   searchParams: Promise<SearchParams>;
@@ -16,13 +21,15 @@ const Page = async ({ searchParams }: Props) => {
   const params = await credentialsParamsLoader(searchParams);
   prefetchCredentials(params);
   return (
-    <HydrateClient>
-      <ErrorBoundary fallback={<div>Failed to load credentials</div>}>
-        <Suspense fallback={<div>Loading credentials...</div>}>
-          <CredentialsList/>
-        </Suspense>
-      </ErrorBoundary>
-    </HydrateClient>
+    <CredentialsContainer>
+      <HydrateClient>
+        <ErrorBoundary  fallback={<CredentialsError />}>
+          <Suspense fallback={<CredentialsLoading />}>
+            <CredentialsList />
+          </Suspense>
+        </ErrorBoundary>
+      </HydrateClient>
+    </CredentialsContainer>
   );
 };
 export default Page;

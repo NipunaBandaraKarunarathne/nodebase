@@ -55,7 +55,7 @@ export const CredentialsHeader = ({ disabled }: { disabled?: boolean }) => {
       title="Credentials"
       description="Create and manage your credentials"
       newButtonHref="/credentials/new"
-   //   newButtonLabel="New credential"
+     newButtonLable="New credential"
       disabled={disabled}
     />
   );
@@ -115,9 +115,9 @@ export const CredentialsEmpty = () => {
 };
 
 const credentialLogos: Record<CredentialType, string> = {
-  [CredentialType.OPENAI]: "/logos/openai.svg",
-  [CredentialType.ANTHROPIC]: "/logos/anthropic.svg",
-  [CredentialType.GEMINI]: "/logos/gemini.svg",
+  [CredentialType.OPENAI]: "/openai.svg",
+  [CredentialType.ANTHROPIC]: "/anthropic.svg",
+  [CredentialType.GEMINI]: "/gemini.svg",
 };
 
 export const CredentialItem = ({
