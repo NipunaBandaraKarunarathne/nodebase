@@ -11,6 +11,7 @@ type OpenAINodeData = {
   variableName: string;
   systemPrompt?: string;
   userPrompt?: string;
+  credentialId?: string;
 };
 
 type OpenAINodeType = Node<OpenAINodeData>;

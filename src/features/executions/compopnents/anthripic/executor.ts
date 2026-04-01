@@ -1,9 +1,9 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
-import { anthropic ,createAnthropic} from '@ai-sdk/anthropic';
+import { anthropic, createAnthropic } from "@ai-sdk/anthropic";
 import Handlebars from "handlebars";
 import { generateText } from "ai";
-
+import prisma from "@/lib/db";
 import { anthropicChannel } from "@/inngest/channels/anthropic";
 
 Handlebars.registerHelper("json", (context) => {
@@ -15,6 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 
 type AnthropicData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -37,14 +38,19 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("Variable name is missing");
   }
 
+  if (!data.credentialId) {
+    await publish(
+      anthropicChannel().status({
+        nodeId,
+        status: "error",
+      }),
+    );
+    throw new NonRetriableError("Anthropic node: Credential is required");
+  }
+
   if (!data.userPrompt) {
     await updateStatus("error");
     throw new NonRetriableError("User prompt is missing");
-  }
-
-  const credentialValue = process.env.ANTHROPIC_API_KEY;
-  if (!credentialValue) {
-    throw new NonRetriableError("Missing ANTHROPIC_API_KEY");
   }
 
   let systemPrompt = "You are a helpful assistant.";
@@ -60,25 +66,35 @@ export const anthropicExecutor: NodeExecutor<AnthropicData> = async ({
     throw new NonRetriableError("Invalid Handlebars template");
   }
 
-   
-
-  const anthropic = createAnthropic({
-    apiKey: credentialValue,
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId,
+      },
+    });
   });
 
-  //const modelName = ""; 
+  const anthropic = createAnthropic({
+    apiKey: credential?.value,
+  });
+
+  if (!credential) {
+    throw new NonRetriableError("Anthropic node: Credential not found");
+  }
 
   try {
-    const { steps } = await step.ai.wrap("anthropic-generate-text", generateText, {
-      model: anthropic('claude-3-haiku-20240307'),
-      system: systemPrompt,
-      prompt: userPrompt,
-    });
+    const { steps } = await step.ai.wrap(
+      "anthropic-generate-text",
+      generateText,
+      {
+        model: anthropic("claude-3-haiku-20240307"),
+        system: systemPrompt,
+        prompt: userPrompt,
+      },
+    );
 
     const text =
-      steps?.[0]?.content?.[0]?.type === "text"
-        ? steps[0].content[0].text
-        : "";
+      steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
 
     await updateStatus("success");
 

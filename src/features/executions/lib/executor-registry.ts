@@ -15,7 +15,7 @@ export const executorRegistry: Record<NodeType, NodeExecutor> = {
   [NodeType.GOOGLE_FORM_TRIGGER]: googleFormTriggerExecutor,
   [NodeType.STRIPE_TRIGGER]: stripeTriggerExecutor,
   [NodeType.GEMINI]: geminiExecutor,
-  [NodeType.ANTHROPIC]:anthropicExecutor, // Reusing Gemini executor for Anthropic nodes for now
+  [NodeType.ANTHROPIC]:anthropicExecutor,
   [NodeType.OPENAI]: openAiExecutor, 
 }; 
 
