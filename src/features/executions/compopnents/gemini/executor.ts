@@ -15,7 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 
 type GeminiData = {
   variableName?: string;
-   credentialId?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -38,7 +38,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     throw new NonRetriableError("Variable name is missing");
   }
 
-    if (!data.credentialId) {
+  if (!data.credentialId) {
     await publish(
       geminiChannel().status({
         nodeId,
@@ -51,11 +51,6 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
   if (!data.userPrompt) {
     await updateStatus("error");
     throw new NonRetriableError("User prompt is missing");
-  }
-
-  const credentialValue = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-  if (!credentialValue) {
-    throw new NonRetriableError("Missing GOOGLE_GENERATIVE_AI_API_KEY");
   }
 
   let systemPrompt = "You are a helpful assistant.";
@@ -71,10 +66,9 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     throw new NonRetriableError("Invalid Handlebars template");
   }
 
+  const modelName = "gemini-3-flash-preview";
 
-  const modelName = "gemini-3-flash-preview"; // Default model model: google("gemini-1.5-flash")
-
-    const credential = await step.run("get-credential", () => {
+  const credential = await step.run("get-credential", () => {
     return prisma.credential.findUnique({
       where: {
         id: data.credentialId,
@@ -87,7 +81,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
   }
 
   const google = createGoogleGenerativeAI({
-    apiKey: credential.value,
+    apiKey: credential?.value,
   });
 
   try {
@@ -98,9 +92,7 @@ export const geminiExecutor: NodeExecutor<GeminiData> = async ({
     });
 
     const text =
-      steps?.[0]?.content?.[0]?.type === "text"
-        ? steps[0].content[0].text
-        : "";
+      steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
 
     await updateStatus("success");
 

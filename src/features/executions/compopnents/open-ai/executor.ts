@@ -1,9 +1,10 @@
 import type { NodeExecutor } from "@/features/executions/types";
 import { NonRetriableError } from "inngest";
-import { openai,createOpenAI } from '@ai-sdk/openai';
+import { openai, createOpenAI } from "@ai-sdk/openai";
 import Handlebars from "handlebars";
 import { generateText } from "ai";
 import { openAiChannel } from "@/inngest/channels/open-ai";
+import prisma from "@/lib/db";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -14,6 +15,7 @@ Handlebars.registerHelper("json", (context) => {
 
 type OpenAiData = {
   variableName?: string;
+  credentialId?: string;
   model?: string;
   systemPrompt?: string;
   userPrompt?: string;
@@ -36,15 +38,22 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     throw new NonRetriableError("Variable name is missing");
   }
 
+    if (!data.credentialId) {
+      await publish(
+        openAiChannel().status({
+          nodeId,
+          status: "error",
+        }),
+      );
+      throw new NonRetriableError("OpenAI  node: Credential is required");
+    }
+
   if (!data.userPrompt) {
     await updateStatus("error");
     throw new NonRetriableError("User prompt is missing");
   }
 
-  const credentialValue = process.env.OPEN_AI_API_KEY;
-  if (!credentialValue) {
-    throw new NonRetriableError("Missing OPEN_AI_API_KEY");
-  }
+
 
   let systemPrompt = "You are a helpful assistant.";
   let userPrompt: string;
@@ -59,23 +68,33 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
     throw new NonRetriableError("Invalid Handlebars template");
   }
 
-  const openai = createOpenAI({
-    apiKey: credentialValue,
+  const credential = await step.run("get-credential", () => {
+    return prisma.credential.findUnique({
+      where: {
+        id: data.credentialId,
+      },
+    });
   });
 
-  const modelName = ""; 
+  if (!credential) {
+    throw new NonRetriableError("OpenAI  node: Credential not found");
+  }
+
+  const openai = createOpenAI({
+    apiKey: credential.value,
+  });
+
+
 
   try {
     const { steps } = await step.ai.wrap("openai-generate-text", generateText, {
-      model: openai('gpt-3.5-turbo'),
+      model: openai("gpt-3.5-turbo"),
       system: systemPrompt,
       prompt: userPrompt,
     });
 
     const text =
-      steps?.[0]?.content?.[0]?.type === "text"
-        ? steps[0].content[0].text
-        : "";
+      steps?.[0]?.content?.[0]?.type === "text" ? steps[0].content[0].text : "";
 
     await updateStatus("success");
 
