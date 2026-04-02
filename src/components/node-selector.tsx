@@ -45,8 +45,6 @@ const triggerNodes: NodeTypeOption[] = [
     description: "Runs the flow when a Stripe event is captured",
     icon: "/stripe.svg",
   },
-
-  
 ];
 
 const executionNodes: NodeTypeOption[] = [
@@ -64,7 +62,7 @@ const executionNodes: NodeTypeOption[] = [
     icon: "/gemini.svg",
   },
 
-    {
+  {
     type: NodeType.OPENAI,
     label: "Open-AI",
     description: "Use Google chatgpt to generate text",
@@ -76,12 +74,19 @@ const executionNodes: NodeTypeOption[] = [
     description: "Use Anthropic to generate text",
     icon: "/anthropic.svg",
   },
-    {
+  {
     type: NodeType.DISCORD,
     label: "Discord",
     description: "Send messages and interact with Discord",
     icon: "/discord.svg",
-  }
+  },
+
+  {
+    type: NodeType.SLACK,
+    label: "Slack",
+    description: "Send messages and interact with Slack",
+    icon: "/slack.svg",
+  },
 ];
 
 interface NodeSelectorProps {
