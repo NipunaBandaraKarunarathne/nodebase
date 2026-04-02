@@ -5,6 +5,7 @@ import Handlebars from "handlebars";
 import { generateText } from "ai";
 import { openAiChannel } from "@/inngest/channels/open-ai";
 import prisma from "@/lib/db";
+import { decrypt } from "@/lib/encription";
 
 Handlebars.registerHelper("json", (context) => {
   const jsonString = JSON.stringify(context, null, 2);
@@ -91,7 +92,7 @@ export const openAiExecutor: NodeExecutor<OpenAiData> = async ({
 
 
   const openai = createOpenAI({
-    apiKey: credential.value,
+    apiKey: decrypt(credential.value),
   });
 
 

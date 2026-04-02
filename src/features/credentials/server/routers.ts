@@ -1,4 +1,3 @@
-
 import prisma from "@/lib/db";
 import {
   createTRPCRouter,
@@ -8,8 +7,9 @@ import {
 import z from "zod";
 import { PAGINATION } from "@/config/constants";
 
-
 import { CredentialType } from "@prisma/client";
+import { en } from "zod/v4/locales";
+import { encrypt } from "@/lib/encription";
 
 export const credentialsRouter = createTRPCRouter({
   create: premiumProcedure
@@ -17,8 +17,8 @@ export const credentialsRouter = createTRPCRouter({
       z.object({
         name: z.string().min(1, "Name is required"),
         type: z.enum(CredentialType),
-        value: z.string().min(1, "Value is required")
-      })
+        value: z.string().min(1, "Value is required"),
+      }),
     )
     .mutation(({ ctx, input }) => {
       const { name, value, type } = input;
@@ -28,10 +28,10 @@ export const credentialsRouter = createTRPCRouter({
           name,
           userId: ctx.userId,
           type,
-          value, // TODO: Consider encrypting in production
+          value: encrypt(value), 
         },
       });
-  }),
+    }),
   remove: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
@@ -40,12 +40,12 @@ export const credentialsRouter = createTRPCRouter({
           id: input.id,
           userId: ctx.userId,
         },
-      })
+      });
     }),
   update: protectedProcedure
     .input(
-      z.object({ 
-        id: z.string(), 
+      z.object({
+        id: z.string(),
         name: z.string().min(1, "Name is required"),
         type: z.enum(CredentialType),
         value: z.string().min(1, "Value is required"),
@@ -59,8 +59,8 @@ export const credentialsRouter = createTRPCRouter({
         data: {
           name,
           type,
-          value, // TODO: Consider encrypting in production
-        }
+          value: encrypt(value),
+        },
       });
     }),
   getOne: protectedProcedure
@@ -80,7 +80,7 @@ export const credentialsRouter = createTRPCRouter({
           .max(PAGINATION.MAX_PAGE_SIZE)
           .default(PAGINATION.DEFAULT_PAGE_SIZE),
         search: z.string().default(""),
-      })
+      }),
     )
     .query(async ({ ctx, input }) => {
       const { page, pageSize, search } = input;
@@ -89,7 +89,7 @@ export const credentialsRouter = createTRPCRouter({
         prisma.credential.findMany({
           skip: (page - 1) * pageSize,
           take: pageSize,
-          where: { 
+          where: {
             userId: ctx.userId,
             name: {
               contains: search,
@@ -129,7 +129,7 @@ export const credentialsRouter = createTRPCRouter({
     .input(
       z.object({
         type: z.enum(CredentialType),
-      })
+      }),
     )
     .query(({ input, ctx }) => {
       const { type } = input;
